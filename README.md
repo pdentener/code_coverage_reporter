@@ -243,8 +243,6 @@ dotnet test ./src --collect:"XPlat Code Coverage" \
   --results-directory ./src/code_coverage > /dev/null 2>&1
 
 # Generate missing code coverage information.
-# Note: The included script uses the local build binary for development;
-# replace with just `cover` if the CLI is installed as a global tool.
 cover report ./src/code_coverage/**/coverage.cobertura.xml
 ```
 
