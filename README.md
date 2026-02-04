@@ -235,15 +235,16 @@ The script that performs the actual work:
 ```bash
 #!/usr/bin/env bash
 
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
 # Delete any existing code coverage results.
-rm -rf ./src/code_coverage > /dev/null 2>&1
+rm -rf "$REPO_ROOT/src/code_coverage" > /dev/null 2>&1
 
 # Run tests with code coverage collection.
-dotnet test ./src --collect:"XPlat Code Coverage" \
-  --results-directory ./src/code_coverage > /dev/null 2>&1
+dotnet test "$REPO_ROOT/src" --collect:"XPlat Code Coverage" --results-directory "$REPO_ROOT/src/code_coverage" > /dev/null 2>&1
 
 # Generate missing code coverage information.
-cover report ./src/code_coverage/**/coverage.cobertura.xml
+cover report "$REPO_ROOT"/src/code_coverage/**/coverage.cobertura.xml
 ```
 
 It runs the test suite with coverage collection, then feeds the results into the CLI. The agent receives only the final coverage report output — a compact summary of uncovered lines ready for action.
