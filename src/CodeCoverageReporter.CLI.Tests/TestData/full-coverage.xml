@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<coverage line-rate="1.0" branch-rate="1.0" version="1.0" timestamp="1234567890" lines-covered="4" lines-valid="4" branches-covered="2" branches-valid="2">
+  <sources>
+    <source>/src</source>
+  </sources>
+  <packages>
+    <package name="TestPackage" line-rate="1.0" branch-rate="1.0" complexity="2">
+      <classes>
+        <class name="FullCoverageClass" filename="FullCoverage.cs" line-rate="1.0" branch-rate="1.0" complexity="2">
+          <methods>
+            <method name="CoveredMethod" signature="void CoveredMethod()" line-rate="1.0" branch-rate="1.0" complexity="2">
+              <lines>
+                <line number="10" hits="5"/>
+                <line number="11" hits="3" branch="true" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="0" type="jump" coverage="100%"/>
+                    <condition number="1" type="jump" coverage="100%"/>
+                  </conditions>
+                </line>
+                <line number="12" hits="2"/>
+                <line number="13" hits="1"/>
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="10" hits="5"/>
+            <line number="11" hits="3" branch="true" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="0" type="jump" coverage="100%"/>
+                <condition number="1" type="jump" coverage="100%"/>
+              </conditions>
+            </line>
+            <line number="12" hits="2"/>
+            <line number="13" hits="1"/>
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

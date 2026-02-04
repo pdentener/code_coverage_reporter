@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+        <!-- CA1707: Test method names use underscores for readability -->
+        <!-- CA1812: Test classes are instantiated by the test runner -->
+        <!-- CA1852: Test classes are sealed but could be reported as sealable -->
+        <!-- CA2000: Disposable objects in tests are managed by test fixtures -->
+        <!-- IDE0040: accessibility modifiers - test classes must be public for xUnit -->
+        <NoWarn>$(NoWarn);CA1707;CA1812;CA1852;CA2000;IDE0040</NoWarn>
+        <!-- Disable code style enforcement for test projects to avoid public/internal conflicts -->
+        <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="NSubstitute" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\CodeCoverageReporter.Cobertura\CodeCoverageReporter.Cobertura.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit" />
+    </ItemGroup>
+
+</Project>
