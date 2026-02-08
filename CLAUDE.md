@@ -17,7 +17,7 @@ Anything file that you create in this repo MUST follow a fixed layout:
 
 Command-line interface for generating code coverage reports. Executable: `cover`
 
-**Commands:** Default (banner/version), `report` (generates reports - placeholder)
+**Commands:** Default (banner/version), `report` (generates missing coverage reports from Cobertura XML)
 
 **Key Dependencies:** Spectre.Console, Spectre.Console.Cli, Microsoft.Extensions.DependencyInjection
 
@@ -30,6 +30,56 @@ Test suite for the CLI project with 100% code coverage target.
 **Framework:** xUnit, NSubstitute (mocking), Spectre.Console.Testing
 
 See `src/CodeCoverageReporter.CLI.Tests/CLAUDE.md` for detailed testing documentation.
+
+### Project Cobertura: Cobertura Library (CodeCoverageReporter.Cobertura.csproj in src/CodeCoverageReporter.Cobertura)
+
+Standalone class library for loading, parsing, merging, and exporting Cobertura XML coverage files.
+
+**Key Components:** Parsing (`ICoberturaParser`), File I/O (`ICoverageFileReader`), Merging (`ICoverageMerger`), Extraction (`IMissingCoverageExtractor`), Exporting (`ICoverageExporter`)
+
+**Key Dependencies:** Microsoft.Extensions.DependencyInjection.Abstractions, Microsoft.Extensions.FileSystemGlobbing
+
+See `src/CodeCoverageReporter.Cobertura/CLAUDE.md` for detailed project documentation.
+
+### Project Cobertura.Tests: Cobertura Unit Tests (CodeCoverageReporter.Cobertura.Tests.csproj in src/CodeCoverageReporter.Cobertura.Tests)
+
+Test suite for the Cobertura library with 100% code coverage target.
+
+**Framework:** xUnit, NSubstitute (mocking)
+
+## Running the cover CLI
+
+The `cover` tool is installed as a .NET global tool. After building, use the `/reinstall-global-tool` skill to pick up local code changes.
+
+```bash
+# Install globally (first time)
+dotnet pack src/CodeCoverageReporter.CLI/CodeCoverageReporter.CLI.csproj -o ./nupkg
+dotnet tool install --global --add-source ./nupkg CodeCoverageReporterCLI
+
+# Show banner and version
+cover
+cover --version
+
+# Generate missing coverage report
+cover report <files> [options]
+```
+
+**Options:**
+- `--output table|json|markdown` - Output format (default: table)
+- `--limit N` - Maximum rows to output
+- `--exclude <pattern>` - Glob patterns to exclude files (repeatable)
+- `--verbose` - Processing info to stderr
+- `--base-path <dir>` - Base directory for relative paths
+- `--absolute-paths` - Show full absolute paths
+
+**Examples:**
+```bash
+cover report coverage.cobertura.xml
+cover report "**/*.cobertura.xml" --output json --limit 20
+cover report coverage.xml --exclude "**/*.g.cs" --verbose
+```
+
+See `src/CodeCoverageReporter.CLI/CLAUDE.md` for full command documentation.
 
 ## Implementation Plans
 Your work in this repo is organized around **tickets** and their corresponding **implementation plans**.

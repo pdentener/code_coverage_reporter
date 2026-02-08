@@ -167,16 +167,38 @@ public sealed class CoverageMergerTests
     }
 
     [Fact]
-    public void Merge_ConflictingFilePaths_ThrowsCoberturaException()
+    public void Merge_DifferentFilePaths_KeepsClassesSeparate()
     {
-        // Arrange
+        // Arrange - Same class name in different files (e.g., source + source-generated partial class)
         var report1 = CreateReportWithFilePath("Package1", "Class1", "Method1", "path1/Class1.cs", 10, 8);
         var report2 = CreateReportWithFilePath("Package1", "Class1", "Method2", "path2/Class1.cs", 5, 3);
 
-        // Act & Assert
-        var ex = Assert.Throws<CoberturaException>(() => _merger.Merge([report1, report2]));
-        Assert.Contains("Class1", ex.Message, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("conflicting", ex.Message, StringComparison.OrdinalIgnoreCase);
+        // Act
+        var result = _merger.Merge([report1, report2]);
+
+        // Assert - Classes with different file paths are kept separate
+        Assert.Single(result.Packages);
+        Assert.Equal(2, result.Packages[0].Classes.Count);
+        Assert.Contains(result.Packages[0].Classes, c => c.FilePath == "path1/Class1.cs");
+        Assert.Contains(result.Packages[0].Classes, c => c.FilePath == "path2/Class1.cs");
+    }
+
+    [Fact]
+    public void Merge_SameClassNameSameFilePath_MergesIntoSingleClass()
+    {
+        // Arrange - Same class name and same file path from different reports should merge
+        var report1 = CreateReportWithFilePath("Package1", "Class1", "Method1", "src/Class1.cs", 10, 8);
+        var report2 = CreateReportWithFilePath("Package1", "Class1", "Method2", "src/Class1.cs", 5, 3);
+
+        // Act
+        var result = _merger.Merge([report1, report2]);
+
+        // Assert - Classes with same name and file path merge into one
+        Assert.Single(result.Packages);
+        Assert.Single(result.Packages[0].Classes);
+        Assert.Equal("Class1", result.Packages[0].Classes[0].Name);
+        Assert.Equal("src/Class1.cs", result.Packages[0].Classes[0].FilePath);
+        Assert.Equal(2, result.Packages[0].Classes[0].Methods.Count);
     }
 
     [Fact]

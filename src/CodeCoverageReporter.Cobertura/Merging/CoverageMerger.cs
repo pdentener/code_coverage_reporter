@@ -126,23 +126,24 @@ public sealed class CoverageMerger : ICoverageMerger
 
     private static List<ClassCoverage> MergeClasses(List<PackageCoverage> packages)
     {
-        var classesByName = new Dictionary<string, List<ClassCoverage>>(StringComparer.Ordinal);
+        var classesByKey = new Dictionary<string, List<ClassCoverage>>(StringComparer.Ordinal);
 
         foreach (var package in packages)
         {
             foreach (var classItem in package.Classes)
             {
-                if (!classesByName.TryGetValue(classItem.Name, out var classes))
+                var key = $"{classItem.Name}|{classItem.FilePath ?? ""}";
+                if (!classesByKey.TryGetValue(key, out var classes))
                 {
                     classes = [];
-                    classesByName[classItem.Name] = classes;
+                    classesByKey[key] = classes;
                 }
                 classes.Add(classItem);
             }
         }
 
-        return classesByName
-            .Select(kvp => MergeClassGroup(kvp.Key, kvp.Value))
+        return classesByKey
+            .Select(kvp => MergeClassGroup(kvp.Value[0].Name, kvp.Value))
             .ToList();
     }
 
@@ -153,20 +154,7 @@ public sealed class CoverageMerger : ICoverageMerger
             return classes[0];
         }
 
-        // Validate file paths are consistent
-        var filePaths = classes
-            .Where(c => c.FilePath is not null)
-            .Select(c => c.FilePath)
-            .Distinct()
-            .ToList();
-
-        if (filePaths.Count > 1)
-        {
-            throw new CoberturaException(
-                $"Cannot merge class '{name}': conflicting file paths ({string.Join(", ", filePaths)})");
-        }
-
-        var filePath = filePaths.FirstOrDefault();
+        var filePath = classes[0].FilePath;
         var mergedMethods = MergeMethods(classes);
         var mergedClassLines = MergeClassLines(classes);
 
